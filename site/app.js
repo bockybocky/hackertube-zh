@@ -443,7 +443,7 @@ function buildNav() {
     const btn = el("button", { class: "area-btn", type: "button", text: area.name });
     const ul = el("ul");
     btn.addEventListener("click", () => wrap.classList.toggle("open"));
-    if (area.featured) {
+    {
       const all = el("a", { class: "cat-link", href: "#/a/" + area.id, text: "全部" });
       all.dataset.id = area.id;
       ul.appendChild(el("li", null, [all]));

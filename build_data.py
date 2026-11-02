@@ -298,6 +298,8 @@ PINNED = [
               "xMP_AfiNlX4", "PaypcVFPs48", "B8Y146v8HxE", "EWqThb9Z1jk"]},
     {"id": "metal-properties", "name": "材料性質與檢測",
      "vids": ["QtxVdC7pBQM", "fzBRYsiyxjI", "FzF1KySHmUA", "jeghGhVdt9s", "d6Pcp944sRI", "KdfHVcU8U7U"]},
+    # 2026-11-02 Charles：「放soilwork 跟deform 軟體教學」；影片在 extra_videos.json（不在原始資料包）
+    {"id": "metal-software", "name": "軟體教學（SolidWorks／DEFORM）", "vids": "extra"},
 ]
 
 
@@ -306,6 +308,8 @@ def apply_pinned(videos: list, tax: dict) -> dict:
     by_vid = {v["vid"]: v for v in videos}
     cats, seen = [], set()
     for pin in PINNED:
+        if pin["vids"] == "extra":
+            pin = dict(pin, vids=[v["vid"] for v in videos if pin["id"] in (v.get("categories") or [])])
         missing = [vid for vid in pin["vids"] if vid not in by_vid]
         if missing:
             raise SystemExit(f"置頂子分類 {pin['id']} 有影片不在資料裡：{missing}")
@@ -387,6 +391,18 @@ def main() -> None:
     if OUT.exists():
         shutil.rmtree(OUT)
     OUT.mkdir(parents=True)
+
+    extra_path = Path(__file__).resolve().parent / "extra_videos.json"
+    extra = json.loads(extra_path.read_text(encoding="utf-8")) if extra_path.exists() else []
+    have = {v["vid"] for v in videos_raw}
+    dup = [e["vid"] for e in extra if e["vid"] in have]
+    if dup:
+        raise SystemExit(f"extra_videos.json 有影片和原資料重複：{dup}")
+    for e in extra:
+        videos_raw.append(e)
+        same = [x["vid"] for x in extra if x["vid"] != e["vid"] and x["categories"] == e["categories"]]
+        similar.append(same[:K_SIM])
+    print(f"外加影片數 {len(extra)}")
 
     tax = json.loads((SRC / "taxonomy.json").read_text(encoding="utf-8"))
     tax_out = apply_pinned(videos_raw, build_taxonomy(tax))
