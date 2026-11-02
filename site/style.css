@@ -233,12 +233,37 @@ a { color: var(--accent); }
 .note { color: var(--muted); font-size: 14px; }
 
 @media (max-width: 860px) {
-  #menu-btn { display: inline-block; }
+  #menu-btn { display: inline-flex; align-items: center; justify-content: center; width: 40px; height: 40px; padding: 0; font-size: 20px; line-height: 1; }
   #side {
     position: fixed;
     z-index: 5;
+    width: min(82vw, 300px);
+    padding: 18px 14px 32px;
     transform: translateX(-105%);
     transition: transform 0.18s ease;
+    box-shadow: 4px 0 24px rgba(0,0,0,0.25);
   }
   #side.open { transform: none; }
+  #scrim { position: fixed; inset: 0; z-index: 4; background: rgba(0,0,0,0.45); }
+  body.menu-open #scrim { display: block; }
+  body.menu-open { overflow: hidden; }
+  .company img { width: 120px; }
+  .brand { font-size: 24px; }
+}
+#scrim { display: none; }
+
+/* 頂欄金色標誌（2026-11-02）：只在手機出現（電腦版側欄已有標誌，不重複）；深色主題換米白字版 */
+.top-logo { display: none; align-items: center; flex: none; }
+.top-logo img { display: block; height: 24px; width: auto; }
+.top-logo .tl-dark { display: none; }
+:root[data-theme="dark"] .top-logo .tl-light { display: none; }
+:root[data-theme="dark"] .top-logo .tl-dark { display: block; }
+@media (prefers-color-scheme: dark) {
+  :root[data-theme="auto"] .top-logo .tl-light { display: none; }
+  :root[data-theme="auto"] .top-logo .tl-dark { display: block; }
+}
+@media (max-width: 860px) {
+  .top-logo { display: flex; }
+  #top { gap: 8px; padding: 12px 14px; }
+  #q { flex: 1 1 160px; min-width: 0; }
 }

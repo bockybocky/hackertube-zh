@@ -501,10 +501,19 @@ async function boot() {
   }
 }
 
+function setMenu(open) {
+  document.getElementById("side").classList.toggle("open", open);
+  document.body.classList.toggle("menu-open", open);
+}
 document.getElementById("menu-btn").addEventListener("click", () => {
-  document.getElementById("side").classList.toggle("open");
+  setMenu(!document.getElementById("side").classList.contains("open"));
+});
+document.getElementById("scrim").addEventListener("click", () => setMenu(false));
+document.getElementById("side").addEventListener("click", (e) => {
+  if (e.target.closest('a[href^="#"], #nav button')) setMenu(false);
 });
 window.addEventListener("hashchange", () => {
+  setMenu(false);
   state.shown = 48;
   render();
 });

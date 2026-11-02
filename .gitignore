@@ -4,3 +4,5 @@ grok_run.log
 grok_report.md
 __pycache__/
 .gstack/
+*.bak-*
+.impeccable/
