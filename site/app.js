@@ -205,7 +205,8 @@ function renderList(title, items) {
 }
 
 function currentItems(r) {
-  const library = r.name === "liked" || r.name === "later" || r.name === "history";
+  const pinnedCat = r.name === "category" && state.tax.areas.some((a) => a.pinned && a.categories.some((c) => c.id === r.id));
+  const library = pinnedCat || r.name === "liked" || r.name === "later" || r.name === "history";
   let pool = state.videos;
   if (r.name === "category") pool = pool.filter((v) => (v.categories || []).includes(r.id));
   if (r.name === "area") {
@@ -436,6 +437,15 @@ function buildNav() {
   const label = el("div", { class: "brand-sub", text: "分類" });
   tree.appendChild(label);
   state.tax.areas.forEach((area) => {
+    if (area.pinned) {
+      area.categories.forEach((c) => {
+        const a = el("a", { class: "cat-link pinned", href: "#/c/" + c.id, text: c.name });
+        a.dataset.id = c.id;
+        a.addEventListener("click", () => { state.shown = 48; });
+        tree.appendChild(a);
+      });
+      return;
+    }
     const wrap = el("div", { class: "area" });
     wrap.dataset.id = area.id;
     const btn = el("button", { class: "area-btn", type: "button", text: area.name });

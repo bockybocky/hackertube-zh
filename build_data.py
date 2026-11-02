@@ -282,6 +282,40 @@ def build_taxonomy(raw: dict) -> dict:
     return {"areas": areas}
 
 
+# 置頂精選分類（2026-11-02 Charles：「加入金屬材料學放在最上面」）。
+# 人工挑選：冶煉、鍛造、鑄造、沖壓、焊接、切削與精密工具機、超合金、金屬積層製造、合金檢測。
+# 排除只是字面撞到 metal／steel／rust 的（Rust 程式語言、青銅時代史、金屬樂、玻璃）。
+PINNED = [
+    {
+        "id": "metal-materials",
+        "name": "金屬材料學",
+        "vids": [
+            "fzBRYsiyxjI", "RuCnZClWwpQ", "hpgK51w6uhk", "iZ50nZU3oG8", "GDzBE6vz5r0",
+            "hUhisi2FBuw", "QtxVdC7pBQM", "BwoiFC-HwPE", "gNRnrn5DE58", "djB9oK6pkbA",
+            "sFrVdoOhu1Q", "RnIvhlKT7SY", "iptAkpqjtMQ", "xMP_AfiNlX4", "PaypcVFPs48",
+            "B8Y146v8HxE", "EWqThb9Z1jk", "o0fG_lnVhHw", "5uxsFglz2ig", "zqmOSMAtadc",
+            "FzF1KySHmUA", "jeghGhVdt9s", "d6Pcp944sRI", "KdfHVcU8U7U", "v5GPWJPLcHg",
+            "VVV4xeWBIxE", "MBVmnKuBocc",
+        ],
+    },
+]
+
+
+def apply_pinned(videos: list, tax: dict) -> dict:
+    by_vid = {v["vid"]: v for v in videos}
+    cats = []
+    for pin in PINNED:
+        missing = [vid for vid in pin["vids"] if vid not in by_vid]
+        if missing:
+            raise SystemExit(f"置頂分類 {pin['id']} 有影片不在資料裡：{missing}")
+        for vid in pin["vids"]:
+            cs = by_vid[vid].get("categories") or []
+            if pin["id"] not in cs:
+                by_vid[vid]["categories"] = [pin["id"]] + cs
+        cats.append({"id": pin["id"], "name": pin["name"]})
+    return {"areas": [{"id": "pinned", "name": "置頂", "pinned": True, "categories": cats}] + tax["areas"]}
+
+
 def main() -> None:
     sys.stdout.reconfigure(encoding="utf-8")
     videos_raw = [slim_video(r) for r in load_jsonl(SRC / "videos.jsonl")]
@@ -349,11 +383,12 @@ def main() -> None:
         shutil.rmtree(OUT)
     OUT.mkdir(parents=True)
 
+    tax = json.loads((SRC / "taxonomy.json").read_text(encoding="utf-8"))
+    tax_out = apply_pinned(videos_raw, build_taxonomy(tax))
     dump(OUT / "videos.json", videos_raw)
     dump(OUT / "similar.json", similar)
     dump(OUT / "cowatch.json", cowatch)
-    tax = json.loads((SRC / "taxonomy.json").read_text(encoding="utf-8"))
-    dump(OUT / "taxonomy.json", build_taxonomy(tax))
+    dump(OUT / "taxonomy.json", tax_out)
 
     shards = defaultdict(dict)
     for vid, rows in mentions.items():
