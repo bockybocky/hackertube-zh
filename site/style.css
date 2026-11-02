@@ -77,6 +77,8 @@ a { color: var(--accent); }
   font-size: 28px;
   letter-spacing: 0.02em;
 }
+.company { display: block; margin: 0 0 14px; }
+.company img { display: block; width: 150px; height: auto; }
 .brand-sub { color: var(--side-muted); font-size: 13px; margin: 4px 0 18px; }
 #nav { display: flex; flex-direction: column; gap: 2px; }
 #nav button, .area-btn, .cat-link {
