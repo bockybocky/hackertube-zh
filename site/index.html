@@ -1,0 +1,34 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>黑客影片</title>
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+<div id="app">
+  <aside id="side">
+    <a class="brand" href="#/">黑客影片</a>
+    <p class="brand-sub">Hacker News 反覆推薦的 YouTube</p>
+    <nav id="nav"></nav>
+    <div id="tree"></div>
+  </aside>
+  <div id="maincol">
+    <header id="top">
+      <button type="button" id="menu-btn" aria-label="開啟選單">選單</button>
+      <input id="q" type="search" placeholder="搜尋標題、頻道、標籤、主題、分類" autocomplete="off">
+      <label>類型
+        <select id="f-type"><option value="">全部</option></select>
+      </label>
+      <label>程度
+        <select id="f-level"><option value="">全部</option></select>
+      </label>
+    </header>
+    <main id="view"></main>
+    <footer id="credit">資料來源：HackerTube（https://hackertube.org）與 open-index/hacker-news 資料集，依 ODC-By 1.0 授權。影片標題與頻道名稱屬原作者，影片由 YouTube 提供。</footer>
+  </div>
+</div>
+<script src="app.js"></script>
+</body>
+</html>
