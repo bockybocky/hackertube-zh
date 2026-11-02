@@ -285,35 +285,40 @@ def build_taxonomy(raw: dict) -> dict:
 # 置頂精選分類（2026-11-02 Charles：「加入金屬材料學放在最上面」）。
 # 人工挑選：冶煉、鍛造、鑄造、沖壓、焊接、切削與精密工具機、超合金、金屬積層製造、合金檢測。
 # 排除只是字面撞到 metal／steel／rust 的（Rust 程式語言、青銅時代史、金屬樂、玻璃）。
+PINNED_AREA = {"id": "metal-materials", "name": "金屬材料學"}
 PINNED = [
-    {
-        "id": "metal-materials",
-        "name": "金屬材料學",
-        "vids": [
-            "fzBRYsiyxjI", "RuCnZClWwpQ", "hpgK51w6uhk", "iZ50nZU3oG8", "GDzBE6vz5r0",
-            "hUhisi2FBuw", "QtxVdC7pBQM", "BwoiFC-HwPE", "gNRnrn5DE58", "djB9oK6pkbA",
-            "sFrVdoOhu1Q", "RnIvhlKT7SY", "iptAkpqjtMQ", "xMP_AfiNlX4", "PaypcVFPs48",
-            "B8Y146v8HxE", "EWqThb9Z1jk", "o0fG_lnVhHw", "5uxsFglz2ig", "zqmOSMAtadc",
-            "FzF1KySHmUA", "jeghGhVdt9s", "d6Pcp944sRI", "KdfHVcU8U7U", "v5GPWJPLcHg",
-            "VVV4xeWBIxE", "MBVmnKuBocc",
-        ],
-    },
+    {"id": "metal-smelting", "name": "冶煉與精煉",
+     "vids": ["RuCnZClWwpQ", "v5GPWJPLcHg", "VVV4xeWBIxE", "MBVmnKuBocc"]},
+    {"id": "metal-forming", "name": "鍛造、鑄造與成形",
+     "vids": ["hpgK51w6uhk", "iZ50nZU3oG8", "GDzBE6vz5r0", "hUhisi2FBuw", "BwoiFC-HwPE"]},
+    {"id": "metal-joining", "name": "焊接與接合",
+     "vids": ["5uxsFglz2ig", "o0fG_lnVhHw", "zqmOSMAtadc"]},
+    {"id": "metal-machining", "name": "切削加工與工具機",
+     "vids": ["gNRnrn5DE58", "djB9oK6pkbA", "sFrVdoOhu1Q", "RnIvhlKT7SY", "iptAkpqjtMQ",
+              "xMP_AfiNlX4", "PaypcVFPs48", "B8Y146v8HxE", "EWqThb9Z1jk"]},
+    {"id": "metal-properties", "name": "材料性質與檢測",
+     "vids": ["QtxVdC7pBQM", "fzBRYsiyxjI", "FzF1KySHmUA", "jeghGhVdt9s", "d6Pcp944sRI", "KdfHVcU8U7U"]},
 ]
 
 
 def apply_pinned(videos: list, tax: dict) -> dict:
+    """置頂區：放在分類表最前面，下分子分類；featured＝零人推薦的也顯示。"""
     by_vid = {v["vid"]: v for v in videos}
-    cats = []
+    cats, seen = [], set()
     for pin in PINNED:
         missing = [vid for vid in pin["vids"] if vid not in by_vid]
         if missing:
-            raise SystemExit(f"置頂分類 {pin['id']} 有影片不在資料裡：{missing}")
+            raise SystemExit(f"置頂子分類 {pin['id']} 有影片不在資料裡：{missing}")
         for vid in pin["vids"]:
+            if vid in seen:
+                raise SystemExit(f"影片 {vid} 重複出現在置頂子分類")
+            seen.add(vid)
             cs = by_vid[vid].get("categories") or []
             if pin["id"] not in cs:
                 by_vid[vid]["categories"] = [pin["id"]] + cs
         cats.append({"id": pin["id"], "name": pin["name"]})
-    return {"areas": [{"id": "pinned", "name": "置頂", "pinned": True, "categories": cats}] + tax["areas"]}
+    area = dict(PINNED_AREA, featured=True, categories=cats)
+    return {"areas": [area] + tax["areas"]}
 
 
 def main() -> None:

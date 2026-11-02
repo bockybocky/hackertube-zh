@@ -205,7 +205,8 @@ function renderList(title, items) {
 }
 
 function currentItems(r) {
-  const pinnedCat = r.name === "category" && state.tax.areas.some((a) => a.pinned && a.categories.some((c) => c.id === r.id));
+  const pinnedCat = state.tax.areas.some((a) => a.featured &&
+    ((r.name === "area" && a.id === r.id) || (r.name === "category" && a.categories.some((c) => c.id === r.id))));
   const library = pinnedCat || r.name === "liked" || r.name === "later" || r.name === "history";
   let pool = state.videos;
   if (r.name === "category") pool = pool.filter((v) => (v.categories || []).includes(r.id));
@@ -437,20 +438,16 @@ function buildNav() {
   const label = el("div", { class: "brand-sub", text: "分類" });
   tree.appendChild(label);
   state.tax.areas.forEach((area) => {
-    if (area.pinned) {
-      area.categories.forEach((c) => {
-        const a = el("a", { class: "cat-link pinned", href: "#/c/" + c.id, text: c.name });
-        a.dataset.id = c.id;
-        a.addEventListener("click", () => { state.shown = 48; });
-        tree.appendChild(a);
-      });
-      return;
-    }
-    const wrap = el("div", { class: "area" });
+    const wrap = el("div", { class: "area" + (area.featured ? " featured open" : "") });
     wrap.dataset.id = area.id;
     const btn = el("button", { class: "area-btn", type: "button", text: area.name });
     const ul = el("ul");
     btn.addEventListener("click", () => wrap.classList.toggle("open"));
+    if (area.featured) {
+      const all = el("a", { class: "cat-link", href: "#/a/" + area.id, text: "全部" });
+      all.dataset.id = area.id;
+      ul.appendChild(el("li", null, [all]));
+    }
     area.categories.forEach((c) => {
       const a = el("a", { class: "cat-link", href: "#/c/" + c.id, text: c.name });
       a.dataset.id = c.id;
