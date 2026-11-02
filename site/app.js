@@ -443,11 +443,6 @@ function buildNav() {
     const btn = el("button", { class: "area-btn", type: "button", text: area.name });
     const ul = el("ul");
     btn.addEventListener("click", () => wrap.classList.toggle("open"));
-    {
-      const all = el("a", { class: "cat-link", href: "#/a/" + area.id, text: "全部" });
-      all.dataset.id = area.id;
-      ul.appendChild(el("li", null, [all]));
-    }
     area.categories.forEach((c) => {
       const a = el("a", { class: "cat-link", href: "#/c/" + c.id, text: c.name });
       a.dataset.id = c.id;
