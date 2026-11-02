@@ -229,6 +229,7 @@ a { color: var(--accent); }
 .rail img { width: 96px; height: 64px; object-fit: cover; background: #292524; }
 .mini span { padding: 6px 6px 6px 0; font-size: 13px; line-height: 1.35; }
 .empty { color: var(--muted); padding: 24px 0; }
+.clear-filter { padding: 8px 16px; border: 1px solid var(--line, #ddd); border-radius: 999px; background: var(--card, #fff); color: inherit; font: inherit; cursor: pointer; }
 .settings label { display: flex; gap: 8px; align-items: center; margin: 8px 0; }
 .note { color: var(--muted); font-size: 14px; }
 

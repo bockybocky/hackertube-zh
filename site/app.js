@@ -187,7 +187,26 @@ function renderList(title, items) {
   view.textContent = "";
   view.appendChild(listHeader(title, items.length));
   if (!items.length) {
-    view.appendChild(el("p", { class: "empty", text: "沒有符合的影片。" }));
+    const typeSel = document.getElementById("f-type");
+    const levelSel = document.getElementById("f-level");
+    const active = [];
+    if (typeSel.value) active.push("類型＝" + typeLabel(typeSel.value));
+    if (levelSel.value) active.push("程度＝" + levelLabel(levelSel.value));
+    if (qInput.value.trim()) active.push("搜尋＝「" + qInput.value.trim() + "」");
+    if (!active.length) {
+      view.appendChild(el("p", { class: "empty", text: "沒有符合的影片。" }));
+      return;
+    }
+    const btn = el("button", { class: "clear-filter", type: "button", text: "清除篩選" });
+    btn.addEventListener("click", () => {
+      typeSel.value = "";
+      levelSel.value = "";
+      qInput.value = "";
+      state.shown = 48;
+      render();
+    });
+    view.appendChild(el("p", { class: "empty", text: "目前篩選（" + active.join("、") + "）下沒有影片。" }));
+    view.appendChild(btn);
     return;
   }
   const slice = items.slice(0, state.shown);
@@ -463,6 +482,8 @@ function fillFilters() {
   const levelSel = document.getElementById("f-level");
   Object.keys(TYPE_ZH).forEach((k) => typeSel.appendChild(el("option", { value: k, text: TYPE_ZH[k] })));
   Object.keys(LEVEL_ZH).forEach((k) => levelSel.appendChild(el("option", { value: k, text: LEVEL_ZH[k] })));
+  typeSel.value = "";
+  levelSel.value = "";
   const reset = () => { state.shown = 48; render(); };
   typeSel.addEventListener("change", reset);
   levelSel.addEventListener("change", reset);
